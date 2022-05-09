@@ -7,8 +7,9 @@
 
 import UIKit
 import AVFoundation
-
+import MediaPlayer
 class PlayerVC: UIViewController {
+    private let commandCenter = MPRemoteCommandCenter.shared()
     public var position: Int = 0
     public var songs: [Song] = []
     @IBOutlet var holder: UIView!
@@ -29,13 +30,38 @@ class PlayerVC: UIViewController {
     @IBOutlet var stackView : UIView!
     override func viewDidLoad() {
         super.viewDidLoad()
-        
     }
     override func viewWillAppear(_ animated: Bool) {
         loadUI()
         inActiveView()
         DispatchQueue.main.asyncAfter(deadline: .now()) {
             self.configure()
+        }
+    }
+    private func setCommandTargets() {
+        // If you don't want to activate buttons, You can just call this API below.
+        // UIApplication.shared.beginReceivingRemoteControlEvents()
+        
+        // Set the closures to process user's activites.
+        commandCenter.playCommand.addTarget { [weak self] (event) -> MPRemoteCommandHandlerStatus in
+            self?.player?.play()
+            self?.playPauseButton.setImage(UIImage(systemName: "pause.fill"), for: .normal)
+            return .success
+        }
+        
+        commandCenter.pauseCommand.addTarget { [weak self] (event) -> MPRemoteCommandHandlerStatus in
+            self?.player?.pause()
+            self?.playPauseButton.setImage(UIImage(systemName: "play.fill"), for: .normal)
+            return .success
+        }
+        
+        commandCenter.changePlaybackPositionCommand.addTarget { [weak self] (event) -> MPRemoteCommandHandlerStatus in
+            guard let positionEvent = event as? MPChangePlaybackPositionCommandEvent else { return .commandFailed }
+            
+            print("posion: \(positionEvent.positionTime)")
+            self?.player?.play()
+            
+            return .success
         }
     }
     func activeView() {
@@ -101,11 +127,12 @@ class PlayerVC: UIViewController {
                 self.startTimeLabel.text = NSString(format: "%02d:%02d", secs/60, secs%60) as String
                 self.endTimeLabel.text = NSString(format: "%02d:%02d", endSecs/60, endSecs%60) as String
                 self.activeView()
+                self.setCommandTargets()
             }
         }
         
     }
-   
+    
     @objc func playbackSliderValueChanged(_ playbackSlider:UISlider)
     {
         let seconds : Int64 = Int64(playbackSlider.value)
@@ -120,7 +147,7 @@ class PlayerVC: UIViewController {
         }
     }
     private func changeValueForLabel(){
-//        startTimeLabel.text = String(round(self.player?.currentTime ?? 0.0))
+        //        startTimeLabel.text = String(round(self.player?.currentTime ?? 0.0))
     }
     @objc func didSeekBackTap(){
         let time : Float64 = CMTimeGetSeconds(self.player!.currentTime())
