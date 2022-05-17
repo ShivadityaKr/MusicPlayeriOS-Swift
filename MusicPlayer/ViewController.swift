@@ -11,9 +11,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @IBOutlet weak var tableView : UITableView!
     override func viewDidLoad() {
         super.viewDidLoad()
-        songs.append(Song(name: "Viva la da", albumName: "Album 3", artistName: "Cold Play", imageName: "2", trackName: "https://gmpdn.com/get/42937/aGgLXkqxdJtYqlO24GOEieX72E7kkDTgW1dNpMwgsmR/mp3"))
+        songs.append(Song(name: "Viva la da", albumName: "Album 3", artistName: "Cold Play", imageName: "2", trackName: "https://s3.amazonaws.com/kargopolov/kukushka.mp3"))
         songs.append(Song(name: "Background music", albumName: "Album 1", artistName: "Rando", imageName: "1", trackName: "https://s3.amazonaws.com/kargopolov/kukushka.mp3"))
-        songs.append(Song(name: "Havana", albumName: "Album 2", artistName: "Camibla", imageName: "3", trackName: "https://gmpdn.com/get/23936/jWRVMbqY1nfNQLgx0RgKhgnx8jxaaoT4aq5xexXksk9/mp3"))
+        songs.append(Song(name: "Havana", albumName: "Album 2", artistName: "Camibla", imageName: "3", trackName: "https://s3.amazonaws.com/kargopolov/kukushka.mp3"))
         tableView.delegate = self
         tableView.dataSource = self
     }
